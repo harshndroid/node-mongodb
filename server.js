@@ -47,7 +47,7 @@ app.post('/modifyUser', async (req, res) => {
     res.json({ error: err });
   }
 });
-
-app.listen(3000, () => {
-  console.log('server listening at 3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log('server listening at', PORT);
 });
