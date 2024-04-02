@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 mongoose
-  .connect('mongodb://127.0.0.1:27017/newdb')
+  .connect('mongodb://0.0.0.0:27017/newdb', { family: 4 })
   .then(() => {
     console.log('Connected to database!');
   })
