@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 mongoose
-  .connect('mongodb://0.0.0.0:27017/newdb')
+  .connect('mongodb://localhost:27017/newdb')
   .then(() => {
     console.log('Connected to database!');
   })
