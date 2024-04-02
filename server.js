@@ -39,7 +39,6 @@ app.put('/updateUser', async (req, res) => {
 });
 
 app.post('/modifyUser', async (req, res) => {
-  console.log('===req', req.body);
   try {
     const x = await User.updateMany({}, { $unset: { id: 2 } });
     res.json({ data: x });
