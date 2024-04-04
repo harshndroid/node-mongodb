@@ -4,8 +4,7 @@ require('dotenv').config();
 mongoose
   // .connect('mongodb://localhost:27017', { family: 4 })
   .connect(
-    'mongodb+srv://harshsuman0802:node-mongodb123@node-mongodb.v5kghef.mongodb.net/',
-    { family: 4 }
+    'mongodb+srv://harshsuman0802:node-mongodb123@node-mongodb.v5kghef.mongodb.net/'
   )
   .then(() => {
     console.log('Connected to database!');
