@@ -35,23 +35,29 @@ app.post('/login', async (req, res) => {
     isNewUser = await User.find({ phone });
     console.log('======isNewUser', phone, isNewUser);
   } catch (error) {
-    res.json({ error });
+    res.status(500).json({ error });
   }
-  if (isNewUser.length === 0) {
-    // save new user
-    const newUser = new User({ phone });
-    console.log('====', newUser);
-    newUser
-      .save()
-      .then(() => {
-        res.status(200).json({ token, phone, isNewUser: true });
-      })
-      .catch((error) => {
-        res.status(500).json({ error });
-      });
+  if (isNewUser) {
+    if (isNewUser.length === 0) {
+      // save new user
+      const newUser = new User({ phone });
+      console.log('====', newUser);
+      newUser
+        .save()
+        .then(() => {
+          res.status(200).json({ token, phone, isNewUser: true });
+        })
+        .catch((error) => {
+          res.status(500).json({ error });
+        });
+    } else {
+      // existing user
+      res.status(200).json({ token, phone, isNewUser: false });
+    }
   } else {
-    // existing user
-    res.status(200).json({ token, phone, isNewUser: false });
+    res
+      .status(500)
+      .json({ error: 'isNewUser is undefined - issue in database conn' });
   }
 });
 
