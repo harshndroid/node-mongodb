@@ -28,40 +28,46 @@ app.get('/', (req, res) => {
 app.post('/login', async (req, res) => {
   console.log('/login');
   const phone = Number(req.body.phone);
-  const token = jwt.sign({ phone }, 'randomstringnoonecanguess');
+
   // check if new user or existing user
-  let isNewUser;
+  let newUser;
   try {
-    isNewUser = await User.find({ phone });
-    console.log('======isNewUser', phone, isNewUser);
+    newUser = await User.find({ phone });
+    console.log('======newUser', phone, newUser);
   } catch (error) {
     res.status(500).json({ error });
   }
-  if (isNewUser) {
-    if (isNewUser.length === 0) {
+  if (newUser) {
+    if (newUser.length === 0) {
       // save new user
-      const newUser = new User({ phone });
-      console.log('====', newUser);
-      newUser
+      const addNewUser = new User({ phone });
+      addNewUser
         .save()
-        .then(() => {
-          res.status(200).json({ token, phone, isNewUser: true });
+        .then((data) => {
+          const token = jwt.sign({ phone }, data.id);
+          res
+            .status(200)
+            .json({ token, phone, userId: data.id, isNewUser: true });
         })
         .catch((error) => {
           res.status(500).json({ error });
         });
     } else {
       // existing user
-      res.status(200).json({ token, phone, isNewUser: false });
+      console.log('existing user id', newUser[0].id);
+      const token = jwt.sign({ phone }, newUser[0].id);
+      res
+        .status(200)
+        .json({ token, phone, userId: newUser[0].id, isNewUser: false });
     }
   } else {
     res
       .status(500)
-      .json({ error: 'isNewUser is undefined - issue in database conn' });
+      .json({ error: 'newUser is undefined - issue in database conn' });
   }
 });
 
-app.get('/init', authMiddleware, (req, res) => {
+app.post('/init', authMiddleware, (req, res) => {
   console.log('/init');
   const jwtDecodedValue = req.jwtDecodedValue;
   if (jwtDecodedValue) res.status(200).json({ data: 'Welcome to our page!' });
