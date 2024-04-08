@@ -3,7 +3,7 @@ const User = require('./models/User');
 
 const authMiddleware = async function (req, res, next) {
   const token = req.headers.authorization.split(' ')[1];
-  const id = req.body.id;
+  const id = req.body.id; // mongoose id
   const isUserPresent = await User.findById(req.body.id);
   console.log('=======isUserPresent', isUserPresent);
   if (isUserPresent) {

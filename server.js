@@ -67,24 +67,22 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.post('/init', authMiddleware, (req, res) => {
-  console.log('/init');
+app.post('/init', authMiddleware, async (req, res) => {
+  console.log('/init', req.body);
   const jwtDecodedValue = req.jwtDecodedValue;
-  if (jwtDecodedValue) res.status(200).json({ data: 'Welcome to our page!' });
-  else res.status(401).json({ data: 'You are not authorized. Login again' });
+  if (jwtDecodedValue) {
+    const id = req.body.id; // mongoose id
+    const data = await User.findByIdAndUpdate(
+      id,
+      { location: req.body.location, lastSeenAt: req.body.lastSeenAt },
+      { new: true, runValidators: true }
+    );
+    console.log('======data', data);
+    res.status(200).json({ data });
+  } else res.status(401).json({ data: 'You are not authorized. Login again' });
 });
 
 app.use('/users', usersRoute);
-
-// app.post('/addUser', (req, res) => {
-//   const data = req.body;
-//   const newUser = new User(data);
-
-//   newUser
-//     .save()
-//     .then(() => res.json({ success: true, message: 'Added user to database.' }))
-//     .catch((err) => res.json({ error: err }));
-// });
 
 // app.put('/updateUser', async (req, res) => {
 //   const name = req.body.name;

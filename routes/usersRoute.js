@@ -3,12 +3,11 @@ const router = express.Router();
 const User = require('./../models/User');
 
 router.get('/', async (req, res) => {
-  const age = Number(req.query.age);
   try {
-    const data = age ? await User.find({ age }) : await User.find();
-    res.json({ success: true, data });
-  } catch (err) {
-    res.json({ error: err });
+    const data = await User.find();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(404).json({ error });
   }
 });
 
