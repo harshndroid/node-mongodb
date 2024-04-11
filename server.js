@@ -44,7 +44,7 @@ app.post('/login', async (req, res) => {
       addNewUser
         .save()
         .then((data) => {
-          const token = jwt.sign({ phone }, data.id);
+          const token = jwt.sign({ phone, id: data.id }, 'somerandomtext');
           res
             .status(200)
             .json({ token, phone, userId: data.id, isNewUser: true });
@@ -55,7 +55,7 @@ app.post('/login', async (req, res) => {
     } else {
       // existing user
       console.log('existing user id', newUser[0].id);
-      const token = jwt.sign({ phone }, newUser[0].id);
+      const token = jwt.sign({ phone, id: newUser[0].id }, 'somerandomtext');
       res
         .status(200)
         .json({ token, phone, userId: newUser[0].id, isNewUser: false });
@@ -70,6 +70,7 @@ app.post('/login', async (req, res) => {
 app.post('/init', authMiddleware, async (req, res) => {
   console.log('/init', req.body);
   const jwtDecodedValue = req.jwtDecodedValue;
+  console.log('========jwtDecodedValue', jwtDecodedValue);
   if (jwtDecodedValue) {
     const id = req.body.id; // mongoose id
     const data = await User.findByIdAndUpdate(
@@ -77,23 +78,25 @@ app.post('/init', authMiddleware, async (req, res) => {
       { location: req.body.location, lastSeenAt: req.body.lastSeenAt },
       { new: true, runValidators: true }
     );
-    console.log('======data', data);
+    res.status(200).json({ data });
+  } else res.status(401).json({ data: 'You are not authorized. Login again' });
+});
+app.post('/uploadPhoto', authMiddleware, async (req, res) => {
+  console.log('/uploadPhoto', req.body);
+  const jwtDecodedValue = req.jwtDecodedValue;
+  console.log('========jwtDecodedValue', jwtDecodedValue);
+  if (jwtDecodedValue) {
+    const id = jwtDecodedValue.id; // mongoose id
+    const data = await User.findByIdAndUpdate(
+      id,
+      { photoUrl: req.body.photoUrl },
+      { new: true, runValidators: true }
+    );
     res.status(200).json({ data });
   } else res.status(401).json({ data: 'You are not authorized. Login again' });
 });
 
 app.use('/users', usersRoute);
-
-// app.put('/updateUser', async (req, res) => {
-//   const name = req.body.name;
-//   const data = await User.findOneAndUpdate(
-//     { name },
-//     { username: req.body.username },
-//     { new: true, runValidators: true }
-//   );
-
-//   res.status(200).json({ success: true, data });
-// });
 
 // app.post('/modifyUser', async (req, res) => {
 //   try {
@@ -105,7 +108,7 @@ app.use('/users', usersRoute);
 //   }
 // });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log('server listening at', PORT);
 });
