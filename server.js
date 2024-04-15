@@ -70,7 +70,6 @@ app.post('/login', async (req, res) => {
 app.post('/init', authMiddleware, async (req, res) => {
   console.log('/init', req.body);
   const jwtDecodedValue = req.jwtDecodedValue;
-  console.log('========jwtDecodedValue', jwtDecodedValue);
   if (jwtDecodedValue) {
     const id = req.body.id; // mongoose id
     const data = await User.findByIdAndUpdate(
@@ -78,35 +77,29 @@ app.post('/init', authMiddleware, async (req, res) => {
       { location: req.body.location, lastSeenAt: req.body.lastSeenAt },
       { new: true, runValidators: true }
     );
-    res.status(200).json({ data });
+
+    const userData = await User.findById(id);
+
+    console.log('====userData', userData);
+    res.status(200).json({ data: userData });
   } else res.status(401).json({ data: 'You are not authorized. Login again' });
 });
-app.post('/uploadPhoto', authMiddleware, async (req, res) => {
-  console.log('/uploadPhoto', req.body);
+
+app.post('/updateUserProfile', authMiddleware, async (req, res) => {
+  console.log('/updateUserProfile', req.body);
   const jwtDecodedValue = req.jwtDecodedValue;
-  console.log('========jwtDecodedValue', jwtDecodedValue);
   if (jwtDecodedValue) {
     const id = jwtDecodedValue.id; // mongoose id
     const data = await User.findByIdAndUpdate(
       id,
-      { photoUrl: req.body.photoUrl },
+      { photoUrl: req.body.photoUrl, name: req.body.name, age: req.body.age },
       { new: true, runValidators: true }
     );
     res.status(200).json({ data });
   } else res.status(401).json({ data: 'You are not authorized. Login again' });
 });
 
-app.use('/users', usersRoute);
-
-// app.post('/modifyUser', async (req, res) => {
-//   try {
-//     const x = await User.updateMany({}, { $unset: { id: 2 } });
-//     res.json({ data: x });
-//   } catch (err) {
-//     console.log('===err', err);
-//     res.json({ error: err });
-//   }
-// });
+app.use('/nearbyTravellers', usersRoute);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

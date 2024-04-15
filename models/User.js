@@ -4,6 +4,8 @@ const userSchema = mongoose.Schema({
   phone: { type: Number, required: true, unique: true },
   location: { type: Object },
   lastSeenAt: { type: Number },
+  name: { type: String },
+  age: { type: Number },
   photoUrl: { type: String },
 });
 
