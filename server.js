@@ -22,7 +22,7 @@ const User = require('./models/User');
 const usersRoute = require('./routes/usersRoute');
 
 app.get('/', (req, res) => {
-  res.send('Server is running.');
+  res.send('Server is running...');
 });
 
 app.post('/login', async (req, res) => {
